@@ -54,7 +54,7 @@ public class Login extends JFrame {
 		contentPane.setLayout(null);
 		
 		JLabel TituloImg = new JLabel("");
-		TituloImg.setIcon(new ImageIcon("C:\\Users\\Jano\\Desktop\\EjemploSimple\\AuraSys\\src\\IMG\\AuraSys_icon_trimmed_128x128-removebg-preview.png"));
+		TituloImg.setIcon(new ImageIcon("src\\IMG\\AuraSys_icon_trimmed_128x128-removebg-preview.png"));
 		TituloImg.setBounds(70, 0, 130, 78);
 		contentPane.add(TituloImg);
 		
@@ -77,14 +77,26 @@ public class Login extends JFrame {
 		inputContra.setBounds(84, 160, 107, 20);
 		contentPane.add(inputContra);
 		
+		
+		
 		JButton btnLogin = new JButton("Ingresar");
+		
+		
+		//Apretar enter y que detecte que es apretar login
+		btnLogin.setBounds(91, 191, 89, 23);
+		contentPane.add(btnLogin);
+		getRootPane().setDefaultButton(btnLogin);
+
+		
+		//Listener que detecta si se logueo o no
 		btnLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				Usuario logueado = u.login(inputNombre.getText(), inputContra.getText());
+				Usuario logueado = u.login(inputNombre.getText(), inputContra.getText()); //Objeto Usuario que guarda las variables 
+																						// Que se ingresaron por texto en los input en el mimso objeto
 				
 				if (logueado == null) {
-					JOptionPane.showMessageDialog(null, "no se pudo loguear");
+					
 				}else {
 					Home home = new Home(logueado);
 					home.run(logueado);

@@ -3,6 +3,7 @@ package DLL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
@@ -24,12 +25,28 @@ public class ControladorUsuario {
 	        
 	        ResultSet rs = ps.executeQuery();
 	        
-	        if (rs.next()) {
-	            Usuario u = new Usuario();
+	        if (rs.next()) { //Revias que se haya encontrado algo
+	            Usuario u = new Usuario(); //creo objeto Usuario y guardo todos los datos de la sesion logueada
+	            u.setId(rs.getInt("id"));
 	            u.setNombre(rs.getString("nombre"));
 	            u.setContraseña(rs.getString("contraseña"));
+	            u.setApellido(rs.getString("apellido"));
+	            u.setRoles(new ArrayList<>());
+	            
+	            int idUsuario = u.getId();
+
+	            //Busco los roles del usuario con JOIN para traer el nombre
+	            String rolQuery = "SELECT r.rol FROM rol_usuario ru JOIN rol r ON ru.rol_id = r.id WHERE ru.usuario_id = ?";
+	            PreparedStatement psRoles = con.prepareStatement(rolQuery);
+	            psRoles.setInt(1, idUsuario);
+	            ResultSet rsRoles = psRoles.executeQuery();
+
+	            while (rsRoles.next()) {
+	                u.agregarRol(rsRoles.getString("rol")); // Lo guardo en la list que luego se va a usar para saber que nombre tiene el rol y poder traerlo
+	            }
 	            return u;
 	        } else {
+	            JOptionPane.showMessageDialog(null, "Nombre o contraseña incorrecta");
 	            return null;
 	        }
 	    } catch (Exception e) {
@@ -37,6 +54,8 @@ public class ControladorUsuario {
 	        return null;
 	    }
 	}
+
+
 
 	
 	

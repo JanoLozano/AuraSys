@@ -35,7 +35,7 @@ public class Home extends JFrame {
 		
 		JLabel textoBienvenido = new JLabel("Bienvendio " + u.getNombre() + " a AuraSys");
 		textoBienvenido.setHorizontalAlignment(SwingConstants.CENTER);
-		textoBienvenido.setBounds(139, 31, 139, 14);
+		textoBienvenido.setBounds(88, 32, 238, 14);
 		contentPane.add(textoBienvenido);
 	}
 

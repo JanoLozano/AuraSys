@@ -2,6 +2,7 @@ package BLL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
@@ -15,9 +16,14 @@ public class Usuario implements ValidacionLogin{
 	private String nombre;
 	private String apellido;
 	private String contraseña;
+	private ArrayList<String> roles;
+	
 	
 	public Usuario() {}
 	
+	public Usuario(ArrayList<String> roles) {
+	    this.roles = new ArrayList<>();
+	}
 	public Usuario(int id, String nombre, String apellido, String contraseña) {
 		super();
 		this.id = id;
@@ -48,6 +54,15 @@ public class Usuario implements ValidacionLogin{
 	}
 	public void setContraseña(String contraseña) {
 		this.contraseña = contraseña;
+	}
+	public void agregarRol(String rol) {
+	    roles.add(rol);
+	}
+	public ArrayList<String> getRoles() {
+	    return roles;
+	}
+	public void setRoles(ArrayList<String> roles) {
+	    this.roles = roles;
 	}
 	@Override
 	public String toString() {
