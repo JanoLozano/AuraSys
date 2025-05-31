@@ -8,6 +8,9 @@ import java.sql.Time;
 
 import javax.swing.JOptionPane;
 
+import BLL.Paciente;
+import BLL.Usuario;
+
 
 
 public class ControladorTurno {
@@ -52,13 +55,54 @@ public class ControladorTurno {
 
 	        ResultSet rs = ps.executeQuery();
 	        if (rs.next()) { //si encontro algo
-	            return rs.getInt(1) > 0; // devuelve true si el valor de la fila es mayor a 1, por que encontro algo
+	        	if (rs.getInt(1) > 0) {
+					return true; // devuelve true si el valor de la fila es mayor a 1, por que encontro algo
+				}      	
 	        }
 	    } catch (Exception e) {
 	        JOptionPane.showMessageDialog(null, "ERROR al verificar turno duplicado: " + e.getMessage());
+	        return false;
 	    }
 	    return false;
 	}
+	
+	public boolean reservarTurno(Paciente paciente, int idTurno) {
+		String select = "SELECT id FROM usuario WHERE nombre = ? AND apellido = ?";
+		int idPacienteReserva = 0;
+		try {
+			PreparedStatement ps = con.prepareStatement(select);
+			ps.setString(1, paciente.getNombre());
+			ps.setString(2, paciente.getApellido());
+			
+			ResultSet rs = ps.executeQuery();
+			
+			if (rs.next()) {
+				idPacienteReserva = rs.getInt("id");
+			}else {
+				JOptionPane.showMessageDialog(null, "No se encontro ningun usuario con ese nombre y apellido");
+			}
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "ERROR: "+ e.getMessage());
+			return false;
+		}
+		
+		String insertId = "UPDATE turno SET paciente_id = ? WHERE id = ?";	
+		
+		try {
+			PreparedStatement ps = con.prepareStatement(insertId);
+			
+			ps.setInt(1, idPacienteReserva);
+			ps.setInt(2, idTurno);
+			ps.executeUpdate();
+			
+		} catch (Exception e) {
+			 JOptionPane.showMessageDialog(null, "ERROR al verificar turno duplicado: " + e.getMessage());
+			 return false;
+		}
+		
+		return true;
+	}
+	
 
 	
 }
