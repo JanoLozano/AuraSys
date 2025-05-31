@@ -60,7 +60,7 @@ public class ControladorTurno {
 				}      	
 	        }
 	    } catch (Exception e) {
-	        JOptionPane.showMessageDialog(null, "ERROR al verificar turno duplicado: " + e.getMessage());
+	        JOptionPane.showMessageDialog(null, e.getMessage());
 	        return false;
 	    }
 	    return false;
@@ -95,14 +95,59 @@ public class ControladorTurno {
 			ps.setInt(2, idTurno);
 			ps.executeUpdate();
 			
+			
 		} catch (Exception e) {
-			 JOptionPane.showMessageDialog(null, "ERROR al verificar turno duplicado: " + e.getMessage());
+			 JOptionPane.showMessageDialog(null, e.getMessage());
 			 return false;
 		}
-		
 		return true;
 	}
 	
+	public boolean estadoTurno(int idTurno) {
+		String sql = "SELECT * FROM `turno` WHERE id = ?";
+		
+		try {
+			PreparedStatement ps = con.prepareStatement(sql);
+			
+			ps.setInt(1, idTurno);
+			
+			ResultSet rs = ps.executeQuery();
+			
+			if (rs.next()) {
+				String estado = rs.getString("estado");
+				
+				if (estado.trim().equalsIgnoreCase("completado")) {
+					return true;
+				}
+				
+			}
+			
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, e.getMessage());
+			return false;
+		}
+		
+		return false;
+	}
+	public boolean ExisteTurno(int idTurno) {
+	    String sql = "SELECT COUNT(*) FROM turno WHERE id = ?";
+	    
+	    try {
+	        PreparedStatement ps = con.prepareStatement(sql);
+	        ps.setInt(1, idTurno);
+	        ResultSet rs = ps.executeQuery();
+	        
+	        if (rs.next()) {
+	            if (rs.getInt(1) > 0) {
+					return true;
+				}
+	        }
+	    } catch (Exception e) {
+	        JOptionPane.showMessageDialog(null, e.getMessage());
+	        return false;
+	    }
+	    return false;
+	}
 
 	
 }
