@@ -9,7 +9,6 @@ import javax.swing.border.EmptyBorder;
 import BLL.Usuario;
 
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.ImageIcon;
 import javax.swing.SwingConstants;
 import javax.swing.JTextField;

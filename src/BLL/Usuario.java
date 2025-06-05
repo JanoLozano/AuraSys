@@ -1,17 +1,18 @@
 package BLL;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
-import DLL.Conexion;
+
+import DLL.ControladorPaciente;
+import DLL.ControladorTurno;
 import DLL.ControladorUsuario;
 import repository.ValidacionLogin;
 
 public class Usuario implements ValidacionLogin{
 	private ControladorUsuario controlador = new ControladorUsuario();
+	private ControladorPaciente ct = new ControladorPaciente();
+	private ControladorTurno ctTurno = new ControladorTurno();
 	private int id;
 	private String nombre;
 	private String apellido;
@@ -118,6 +119,30 @@ public class Usuario implements ValidacionLogin{
 		    return;
 		}
 		this.controlador.agregarPacienteProfesional(paciente, profesional);
+	}
+	
+	public boolean cancelarTurnoSiEsValido(int idTurno) {
+	    // Verifica que el turno exista
+	    if (!ctTurno.existeTurno(idTurno)) {
+	        JOptionPane.showMessageDialog(null, "El turno no existe.");
+	        return false;
+	    }
+
+	    // Verifica que el turno este en estado "activo"
+	    if (!ctTurno.estadoTurno(idTurno)) {
+	        JOptionPane.showMessageDialog(null, "Solo se pueden cancelar turnos que estén activos.");
+	        return false;
+	    }
+	    
+	    boolean exito = ctTurno.cambiarEstadoTurno(idTurno, "cancelado");
+
+	    if (exito) {
+	        JOptionPane.showMessageDialog(null, "Turno cancelado exitosamente.");
+	        return true;
+	    } else {
+	        JOptionPane.showMessageDialog(null, "No se pudo cancelar el turno.");
+	        return false;
+	    }
 	}
 	
 	public void menu() {

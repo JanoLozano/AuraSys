@@ -3,6 +3,7 @@ package DLL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
@@ -251,6 +252,46 @@ public class ControladorAdmin {
 			return false;
 		}
 		
+		String sqlRolIds = "SELECT rol_id FROM rol_usuario WHERE usuario_id = ?";
+		ArrayList<Integer> rolIds = new ArrayList<>();
+
+		try {
+		    PreparedStatement ps = con.prepareStatement(sqlRolIds);
+		    ps.setInt(1, idNombre);
+		    ResultSet rs = ps.executeQuery();
+
+		    while (rs.next()) {
+		        rolIds.add(rs.getInt("rol_id"));
+		    }
+
+		    //verificar los nombres de los roles
+		    for (int rolId : rolIds) {
+		        String sqlNombreRol = "SELECT rol FROM rol WHERE id = ?";
+		        PreparedStatement ps2 = con.prepareStatement(sqlNombreRol);
+		        ps2.setInt(1, rolId);
+		        ResultSet rs2 = ps2.executeQuery();
+
+		        if (rs2.next()) {
+		            String rolExistente = rs2.getString("rol");
+
+		            // el usuario ya es paciente y se intenta agregar otro rol
+		            if (rolExistente.equals("paciente") && !nombreRol.getNombre().equals("paciente")) {
+		                JOptionPane.showMessageDialog(null, "Este usuario ya es paciente y no puede tener otros roles.");
+		                return false;
+		            }
+
+		            // el usuario ya tiene un rol distinto y se intenta agregar paciente
+		            if (!rolExistente.equals("paciente") && nombreRol.getNombre().equals("paciente")) {
+		                JOptionPane.showMessageDialog(null, "Este usuario ya tiene un rol y no puede convertirse en paciente.");
+		                return false;
+		            }
+		        }
+		    }
+		} catch (Exception e) {
+		    JOptionPane.showMessageDialog(null, "ERROR al verificar roles existentes: " + e.getMessage());
+		    return false;
+		}
+		
 		String sqlInsert = "INSERT INTO `rol_usuario`(`usuario_id`, `rol_id`) VALUES (?,?)";
 		
 		
@@ -356,6 +397,20 @@ public class ControladorAdmin {
 	        return false;
 	    }
 	}
-
+	
+	public boolean eliminarTurno(int idTurno) {
+		String sql = "DELETE FROM turno WHERE id = ?";
+		
+		try {
+			PreparedStatement ps = con.prepareStatement(sql);
+			ps.setInt(1, idTurno);
+			ps.executeUpdate();
+			return true;
+			
+		} catch (Exception e) {
+			 JOptionPane.showMessageDialog(null, e.getMessage());
+			 return false;			 
+		}
+	}
 	
 }

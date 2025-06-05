@@ -6,6 +6,7 @@ import java.sql.Date;
 import java.sql.Time;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 
@@ -93,7 +94,6 @@ public class Turno {
 	}
 
 	public boolean crearTurno(int profesionalId, Date fechaTurno, Time horaTurno, String tipoSesion) {
-		
 		LocalDateTime fechaHoraTurno = fechaTurno.toLocalDate().atTime(horaTurno.toLocalTime()); //guarda la fecha y hora en una sola variable
 		LocalDateTime ahora = LocalDateTime.now(ZoneId.systemDefault()); //Fecha y hora actual para comparar
 		
@@ -102,7 +102,6 @@ public class Turno {
 				JOptionPane.showMessageDialog(null, "Todos los campos son obligatorios.");
 				return false;
 		}
-		
 		if (fechaHoraTurno.isBefore(ahora)) { // verifica que no sea anterior a la fecha actual
 			JOptionPane.showMessageDialog(null, "No se puede agendar un turno con fecha anterior a la actual.");
 			return false;
@@ -111,33 +110,15 @@ public class Turno {
 			JOptionPane.showMessageDialog(null, "Ya existe un turno para ese profesional en ese horario.");
 	        return false;
 		}
-		
-		
 		return ct.crearTurno(profesionalId, fechaTurno, horaTurno, tipoSesion);	//en caso de que pase todas las validaciones retorna la consulta
 	}
 	
-	public boolean reservarTurno(Paciente paciente, int idTurno) {
-		if (paciente == null) {
-		    JOptionPane.showMessageDialog(null, "Paciente no válido");
-		    return false;
-		}
-		
-		if (paciente.getNombre() == null || paciente.getNombre().trim().isEmpty() ||
-			    paciente.getApellido() == null || paciente.getApellido().trim().isEmpty()) {
-			    JOptionPane.showMessageDialog(null, "Nombre y apellido son obligatorios");
-			    return false;
-			}
-		
-		if (!ct.estadoTurno(idTurno)) {
-			JOptionPane.showMessageDialog(null, "Este turno no esta disponible");
-			return false;
-		}
-		
-		if (!ct.ExisteTurno(idTurno)) {
-			JOptionPane.showMessageDialog(null, "No existe un turno con esa id");
-		}
-		return ct.reservarTurno(paciente, idTurno);
+	
+	public List<Turno> obtenerTurnosPorProfesional(Usuario profesional) {
+	    return ct.obtenerTurnosPorProfesional(profesional);
 	}
 
-	
+	public List<Turno> obtenerTurnosPorPaciente(Usuario paciente) {
+	    return ct.obtenerTurnosPorPaciente(paciente);
+	}
 }

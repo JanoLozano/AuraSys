@@ -5,9 +5,11 @@ import java.sql.ResultSet;
 
 import javax.swing.JOptionPane;
 import DLL.ControladorAdmin;
+import DLL.ControladorTurno;
 
 public class Administrador extends Usuario{
 	private ControladorAdmin controlador = new ControladorAdmin();
+	private ControladorTurno ctTurno = new ControladorTurno();
 	public Administrador() {
 		super();
 		
@@ -92,7 +94,15 @@ public class Administrador extends Usuario{
 	            return false;
 	        }
 
-	        return this.controlador.modificarRol(usuario, rolActual, rolNuevo);
-	        
+	        return this.controlador.modificarRol(usuario, rolActual, rolNuevo);       
 	    }
+	 public boolean eliminarTurno(int idTurno) {
+		 if (!ctTurno.existeTurno(idTurno)) {
+			 JOptionPane.showMessageDialog(null, "El turno no existe.");
+			    return false;
+		}
+		 
+		 return controlador.eliminarTurno(idTurno);
+	 }
+	 
 }

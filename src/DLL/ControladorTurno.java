@@ -5,10 +5,14 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Time;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.naming.spi.DirStateFactory.Result;
 import javax.swing.JOptionPane;
 
 import BLL.Paciente;
+import BLL.Turno;
 import BLL.Usuario;
 
 
@@ -25,7 +29,8 @@ public class ControladorTurno {
 	
 	public boolean crearTurno(int profesionalId, Date fechaTurno, Time horaTurno, String tipoSesion) {
 		 String sql = "INSERT INTO turno (fecha_turno, hora_turno, profesional_id, tipo_sesion, estado) "
-		 		+ "VALUES (?, ?, ?, ?, 'activo')"; //Inserta los datos en la tabla turno y como default deja estado en activo, tampoco se le pasa paciente ya que eso lo hace un paciente
+		 		+ "VALUES (?, ?, ?, ?, 'activo')"; //Inserta los datos en la tabla turno y como default deja estado en activo, 
+		 											//tampoco se le pasa paciente ya que eso lo hace un paciente
 		
 		try {
 			PreparedStatement ps = con.prepareStatement(sql);
@@ -44,6 +49,80 @@ public class ControladorTurno {
 		return true;
 	}
 	
+	public boolean cambiarEstadoTurno(int idTurno, String estadoTurno) {
+		String sql = "UPDATE turno SET estado = ? WHERE id = ?";
+		
+		try {
+			PreparedStatement ps = con.prepareStatement(sql);
+			
+			ps.setString(1, estadoTurno);
+			ps.setInt(2, idTurno);
+			ps.executeUpdate();
+			return true;
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "ERROR al cambiar estado del turno: " + e.getMessage());
+	        return false;
+		}
+		
+		
+	}
+	
+	public List<Turno> obtenerTurnosPorProfesional(Usuario profesional) {
+		List<Turno> turnos = new ArrayList<>();
+		
+		String sql = "SELECT * FROM turno WHERE profesional_id = ?";
+		
+		try {
+			PreparedStatement ps = con.prepareStatement(sql);
+			ps.setInt(1, profesional.getId());
+			
+			ResultSet rs = ps.executeQuery();
+			
+			while (rs.next()) {
+				Turno turno = new Turno();
+				turno.setFechaTurno(rs.getDate("fecha_turno"));
+	            turno.setHoraTurno(rs.getTime("hora_turno"));
+	            turno.setTipoSesion(rs.getString("tipo_sesion"));
+	            turno.setEstado(rs.getString("estado"));
+	            
+	            turno.setProfesional(profesional);
+	            turnos.add(turno);
+			}
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "ERROR al obtener turnos del profesional: " + e.getMessage());
+		}
+		
+		return turnos;
+	}
+	
+	public List<Turno> obtenerTurnosPorPaciente(Usuario paciente) {
+		
+	    List<Turno> turnos = new ArrayList<>();
+	    String sql = "SELECT * FROM turno WHERE paciente_id = ?";
+	    
+	    try {
+	        PreparedStatement ps = con.prepareStatement(sql);
+	        ps.setInt(1, paciente.getId());
+	        ResultSet rs = ps.executeQuery();
+
+	        while (rs.next()) {
+	            Turno turno = new Turno();
+	            turno.setFechaTurno(rs.getDate("fecha_turno"));
+	            turno.setHoraTurno(rs.getTime("hora_turno"));
+	            turno.setTipoSesion(rs.getString("tipo_sesion"));
+	            turno.setEstado(rs.getString("estado"));
+
+	            turno.setPaciente(paciente);
+	            turnos.add(turno);
+	        }
+	    } catch (Exception e) {
+	        JOptionPane.showMessageDialog(null, "ERROR al obtener turnos del paciente: " + e.getMessage());
+	    }
+
+	    return turnos;
+	}
+
+	//validaciones para turnos
 	public boolean existeTurno(int profesionalId, Date fechaTurno, Time horaTurno) {
 	    String sql = "SELECT COUNT(*) FROM turno WHERE profesional_id = ? AND fecha_turno = ? AND hora_turno = ?"; //cuantas filas cumplen con la condicion where
 	    
@@ -65,63 +144,21 @@ public class ControladorTurno {
 	    }
 	    return false;
 	}
-	
-	public boolean reservarTurno(Paciente paciente, int idTurno) {
-		String select = "SELECT id FROM usuario WHERE nombre = ? AND apellido = ?";
-		int idPacienteReserva = 0;
-		try {
-			PreparedStatement ps = con.prepareStatement(select);
-			ps.setString(1, paciente.getNombre());
-			ps.setString(2, paciente.getApellido());
-			
-			ResultSet rs = ps.executeQuery();
-			
-			if (rs.next()) {
-				idPacienteReserva = rs.getInt("id");
-			}else {
-				JOptionPane.showMessageDialog(null, "No se encontro ningun usuario con ese nombre y apellido");
-			}
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "ERROR: "+ e.getMessage());
-			return false;
-		}
-		
-		String insertId = "UPDATE turno SET paciente_id = ? WHERE id = ?";	
-		
-		try {
-			PreparedStatement ps = con.prepareStatement(insertId);
-			
-			ps.setInt(1, idPacienteReserva);
-			ps.setInt(2, idTurno);
-			ps.executeUpdate();
-			
-			
-		} catch (Exception e) {
-			 JOptionPane.showMessageDialog(null, e.getMessage());
-			 return false;
-		}
-		return true;
-	}
-	
 	public boolean estadoTurno(int idTurno) {
 		String sql = "SELECT * FROM `turno` WHERE id = ?";
 		
 		try {
-			PreparedStatement ps = con.prepareStatement(sql);
-			
-			ps.setInt(1, idTurno);
-			
+			PreparedStatement ps = con.prepareStatement(sql);	
+			ps.setInt(1, idTurno);		
 			ResultSet rs = ps.executeQuery();
 			
 			if (rs.next()) {
 				String estado = rs.getString("estado");
 				
-				if (estado.trim().equalsIgnoreCase("completado")) {
+				if (estado.trim().equalsIgnoreCase("activo")) {
 					return true;
 				}
-				
 			}
-			
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, e.getMessage());
 			return false;
@@ -129,7 +166,7 @@ public class ControladorTurno {
 		
 		return false;
 	}
-	public boolean ExisteTurno(int idTurno) {
+	public boolean existeTurno(int idTurno) {
 	    String sql = "SELECT COUNT(*) FROM turno WHERE id = ?";
 	    
 	    try {
