@@ -158,7 +158,25 @@ public class ControladorTurno {
 	    }
 	    return null;
 	}
+	
+	public boolean modificarTurno(int idTurno, Date nuevaFecha, Time nuevaHora, String nuevoTipoSesion) {
+	    String sql = "UPDATE turno SET fecha_turno = ?, hora_turno = ?, tipo_sesion = ? WHERE id = ?";
 
+	    try {
+	        PreparedStatement ps = con.prepareStatement(sql);
+	        ps.setDate(1, nuevaFecha);
+	        ps.setTime(2, nuevaHora);
+	        ps.setString(3, nuevoTipoSesion);
+	        ps.setInt(4, idTurno);
+
+	        ps.executeUpdate();
+	        return true;
+
+	    } catch (Exception e) {
+	        JOptionPane.showMessageDialog(null, "ERROR al modificar turno: " + e.getMessage());
+	        return false;
+	    }
+	}
 	
 	//validaciones para turnos
 	public boolean existeTurno(int profesionalId, Date fechaTurno, Time horaTurno) {

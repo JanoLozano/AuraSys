@@ -1,7 +1,7 @@
 package BLL;
 
 
-import java.security.Timestamp;
+
 import java.sql.Date;
 import java.sql.Time;
 import java.time.LocalDateTime;
@@ -121,5 +121,21 @@ public class Turno {
 	    return ct.obtenerTurnosPorPaciente(paciente);
 	}
 	
+	public boolean modificarTurno(int idTurno, Date nuevaFecha, Time nuevaHora, String nuevoTipoSesion) {
+			LocalDateTime fechaHoraTurno = nuevaFecha.toLocalDate().atTime(nuevaHora.toLocalTime());
+			LocalDateTime ahora = LocalDateTime.now(ZoneId.systemDefault());
+		    
+		    if (ct.existeTurno(idTurno)) {
+		        JOptionPane.showMessageDialog(null, "Ya existe un turno para ese profesional en ese horario.");
+		        return false;
+		    }
+		    if (fechaHoraTurno.isBefore(ahora)) {
+		        JOptionPane.showMessageDialog(null, "No se puede agendar un turno con fecha anterior a la actual.");
+		        return false;
+		    }
+
+		    
+		return ct.modificarTurno(idTurno, nuevaFecha, nuevaHora, nuevoTipoSesion);
+	}
 	
 }
