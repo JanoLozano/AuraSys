@@ -24,7 +24,7 @@ public class ControladorTurno {
 	//String tipoSesion
 	//String estado // "activo", "cancelado", "completado"
 	
-	
+	ControladorUsuario controladorUsuario = new ControladorUsuario();
 	private static Connection con = Conexion.getInstance().getConnection();
 	
 	public boolean crearTurno(int profesionalId, Date fechaTurno, Time horaTurno, String tipoSesion) {
@@ -122,6 +122,44 @@ public class ControladorTurno {
 	    return turnos;
 	}
 
+	public Turno obtenerTurnoPorId(int idTurno) {
+	    String sql = "SELECT * FROM turno WHERE id = ?";
+	    
+	    try {
+	        PreparedStatement ps = con.prepareStatement(sql);
+	        ps.setInt(1, idTurno);
+	        ResultSet rs = ps.executeQuery();
+	        
+	        if (rs.next()) {
+	            Turno turno = new Turno();
+	            turno.setFechaTurno(rs.getDate("fecha_turno"));
+	            turno.setHoraTurno(rs.getTime("hora_turno"));
+	            turno.setTipoSesion(rs.getString("tipo_sesion"));
+	            turno.setEstado(rs.getString("estado"));
+	            
+	            // Profesional
+	            int profesionalId = rs.getInt("profesional_id"); //Guardo en profesionalId el id de la columna profesional_id del resultado de la consulta
+	            Usuario profesional = controladorUsuario.obtenerUsuarioPorId(profesionalId); //Guardo en una variable tipo Usuario los datos del profesional
+	            																			//Usando la funcion del CotrnoladorUsuario obtenerUsuarioPorId()
+	            																			//Y le paso por parametro el id que guarde en la variable profesionalId
+	            turno.setProfesional(profesional);
+	            
+	            // Paciente puede ser null
+	            int pacienteId = rs.getInt("paciente_id");
+	            if (pacienteId != 0) {
+	                Usuario paciente = controladorUsuario.obtenerUsuarioPorId(pacienteId);
+	                turno.setPaciente(paciente);
+	            }
+
+	            return turno;
+	        }
+	    } catch (Exception e) {
+	        JOptionPane.showMessageDialog(null, "ERROR al obtener el turno: " + e.getMessage());
+	    }
+	    return null;
+	}
+
+	
 	//validaciones para turnos
 	public boolean existeTurno(int profesionalId, Date fechaTurno, Time horaTurno) {
 	    String sql = "SELECT COUNT(*) FROM turno WHERE profesional_id = ? AND fecha_turno = ? AND hora_turno = ?"; //cuantas filas cumplen con la condicion where

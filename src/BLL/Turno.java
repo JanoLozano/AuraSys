@@ -92,7 +92,7 @@ public class Turno {
 		return "Turno [fechaTurno=" + fechaTurno + ", horaTurno=" + horaTurno + ", paciente=" + paciente
 				+ ", profesional=" + profesional + ", tipoSesion=" + tipoSesion + ", estado=" + estado + "]";
 	}
-
+	//Crear Turno
 	public boolean crearTurno(int profesionalId, Date fechaTurno, Time horaTurno, String tipoSesion) {
 		LocalDateTime fechaHoraTurno = fechaTurno.toLocalDate().atTime(horaTurno.toLocalTime()); //guarda la fecha y hora en una sola variable
 		LocalDateTime ahora = LocalDateTime.now(ZoneId.systemDefault()); //Fecha y hora actual para comparar
@@ -112,8 +112,7 @@ public class Turno {
 		}
 		return ct.crearTurno(profesionalId, fechaTurno, horaTurno, tipoSesion);	//en caso de que pase todas las validaciones retorna la consulta
 	}
-	
-	
+	//Traer Lista TURNOS
 	public List<Turno> obtenerTurnosPorProfesional(Usuario profesional) {
 	    return ct.obtenerTurnosPorProfesional(profesional);
 	}
@@ -121,4 +120,6 @@ public class Turno {
 	public List<Turno> obtenerTurnosPorPaciente(Usuario paciente) {
 	    return ct.obtenerTurnosPorPaciente(paciente);
 	}
+	
+	
 }

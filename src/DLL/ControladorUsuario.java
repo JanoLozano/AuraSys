@@ -97,4 +97,25 @@ public class ControladorUsuario {
 			JOptionPane.showMessageDialog(null, "ERROR: " + e.getMessage());
 		}
 	}
+	public Usuario obtenerUsuarioPorId(int id) {
+	    String sql = "SELECT * FROM usuario WHERE id = ?";
+	    
+	    try {
+	        PreparedStatement ps = con.prepareStatement(sql);
+	        ps.setInt(1, id);
+	        ResultSet rs = ps.executeQuery();
+	        
+	        if (rs.next()) {
+	            Usuario u = new Usuario();
+	            u.setId(rs.getInt("id"));
+	            u.setNombre(rs.getString("nombre"));
+	            u.setApellido(rs.getString("apellido"));
+	            return u;
+	        }
+	    } catch (Exception e) {
+	        JOptionPane.showMessageDialog(null, "ERROR al obtener usuario: " + e.getMessage());
+	    }
+	    return null;
+	}
+
 }
