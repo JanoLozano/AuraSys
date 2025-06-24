@@ -3,15 +3,13 @@ import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
-
-import DLL.ControladorPaciente;
 import DLL.ControladorTurno;
 import DLL.ControladorUsuario;
 import repository.ValidacionLogin;
 
 public class Usuario implements ValidacionLogin{
 	private ControladorUsuario controlador = new ControladorUsuario();
-	private ControladorPaciente ct = new ControladorPaciente();
+	
 	private ControladorTurno ctTurno = new ControladorTurno();
 	private int id;
 	private String nombre;
@@ -65,12 +63,18 @@ public class Usuario implements ValidacionLogin{
 	public void setRoles(ArrayList<String> roles) {
 	    this.roles = roles;
 	}
+	public boolean tieneRol(String rolBuscado) {
+	    if (roles == null) return false;
+	    return roles.contains(rolBuscado);
+	}
+	
 	@Override
 	public String toString() {
 		return "Usuario [id=" + id + ", nombre=" + nombre + ", apellido=" + apellido + ", contraseña=" + contraseña
 				+ "]";
 	}
 	
+
 	//Interface
 	@Override
 	public boolean validarNombre(String nombre) {

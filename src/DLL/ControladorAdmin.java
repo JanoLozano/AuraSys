@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 
@@ -412,5 +413,41 @@ public class ControladorAdmin {
 			 return false;			 
 		}
 	}
+	public List<Usuario> obtenerTodosLosUsuariosConRoles() {
+	    List<Usuario> lista = new ArrayList<>();
+
+	    String sqlUsuarios = "SELECT * FROM usuario";
+
+	    try {
+	        PreparedStatement ps = con.prepareStatement(sqlUsuarios);
+	        ResultSet rs = ps.executeQuery();
+
+	        while (rs.next()) {
+	            Usuario u = new Usuario();
+	            u.setId(rs.getInt("id"));
+	            u.setNombre(rs.getString("nombre"));
+	            u.setApellido(rs.getString("apellido"));
+	            u.setContraseña(rs.getString("contraseña"));
+	            u.setRoles(new ArrayList<>());
+
+	            // Obtener roles
+	            String rolSql = "SELECT r.rol FROM rol_usuario ru JOIN rol r ON ru.rol_id = r.id WHERE ru.usuario_id = ?";
+	            PreparedStatement psRol = con.prepareStatement(rolSql);
+	            psRol.setInt(1, u.getId());
+	            ResultSet rsRoles = psRol.executeQuery();
+
+	            while (rsRoles.next()) {
+	                u.agregarRol(rsRoles.getString("rol"));
+	            }
+
+	            lista.add(u);
+	        }
+	    } catch (Exception e) {
+	        JOptionPane.showMessageDialog(null, "ERROR al cargar usuarios: " + e.getMessage());
+	    }
+
+	    return lista;
+	}
+
 	
 }

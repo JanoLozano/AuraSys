@@ -4,9 +4,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 
+import BLL.Administrador;
+import BLL.Paciente;
 import BLL.Usuario;
 
 public class ControladorUsuario {
@@ -17,34 +20,44 @@ public class ControladorUsuario {
 	//Funcion para Login/Ingresar
 	public Usuario login(String nombre, String contraseña) {
 	    String sql = "SELECT * FROM usuario WHERE nombre = ? AND contraseña = ?";
-	    
+
 	    try {
 	        PreparedStatement ps = con.prepareStatement(sql);
 	        ps.setString(1, nombre);
-	        ps.setString(2, contraseña);    
-	        
+	        ps.setString(2, contraseña);
+
 	        ResultSet rs = ps.executeQuery();
-	        
-	        if (rs.next()) { //Revias que se haya encontrado algo
-	            Usuario u = new Usuario(); //creo objeto Usuario y guardo todos los datos de la sesion logueada
-	            u.setId(rs.getInt("id"));
-	            u.setNombre(rs.getString("nombre"));
-	            u.setContraseña(rs.getString("contraseña"));
-	            u.setApellido(rs.getString("apellido"));
-	            u.setRoles(new ArrayList<>());
-	            
-	            int idUsuario = u.getId();
 
-	            //Busco los roles del usuario con JOIN para traer el nombre
-	            String rolQuery = "SELECT r.rol FROM rol_usuario ru JOIN rol r ON ru.rol_id = r.id WHERE ru.usuario_id = ?";
-	            PreparedStatement psRoles = con.prepareStatement(rolQuery);
-	            psRoles.setInt(1, idUsuario);
-	            ResultSet rsRoles = psRoles.executeQuery();
+	        if (rs.next()) {
+	            int id = rs.getInt("id");
+	            String nom = rs.getString("nombre");
+	            String ape = rs.getString("apellido");
+	            String pass = rs.getString("contraseña");
 
+	            // Obtener roles
+	            String rolSql = "SELECT r.rol FROM rol_usuario ru JOIN rol r ON ru.rol_id = r.id WHERE ru.usuario_id = ?";
+	            PreparedStatement psRol = con.prepareStatement(rolSql);
+	            psRol.setInt(1, id);
+	            ResultSet rsRoles = psRol.executeQuery();
+
+	            List<String> roles = new ArrayList<>();
 	            while (rsRoles.next()) {
-	                u.agregarRol(rsRoles.getString("rol")); // Lo guardo en la list que luego se va a usar para saber que nombre tiene el rol y poder traerlo
+	                roles.add(rsRoles.getString("rol"));
 	            }
+
+	            Usuario u;
+
+	            if (roles.contains("admin")) {
+	                u = new Administrador(id, nom, ape, pass);
+	            } else if (roles.contains("paciente")) {
+	                u = new Paciente(id, nom, ape, pass);
+	            } else {
+	                u = new Usuario(id, nom, ape, pass); // Profesional u otro
+	            }
+
+	            u.setRoles(new ArrayList<>(roles));
 	            return u;
+
 	        } else {
 	            JOptionPane.showMessageDialog(null, "Nombre o contraseña incorrecta");
 	            return null;
@@ -54,6 +67,7 @@ public class ControladorUsuario {
 	        return null;
 	    }
 	}
+
 
 
 

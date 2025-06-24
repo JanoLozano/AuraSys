@@ -1,5 +1,4 @@
 package BLL;
-import java.util.List;
 
 public class Rol {
 	private int id;

@@ -16,6 +16,7 @@ import DLL.ControladorTurno;
 
 public class Turno {
 	private ControladorTurno ct = new ControladorTurno();
+	private int id;
 	private Date fechaTurno;
 	private Time horaTurno;
 	private Usuario paciente; // Obj Usuario con rol paciente
@@ -36,7 +37,13 @@ public class Turno {
 		this.estado = estado;
 	}
 	
-	
+	public int getId() {
+	    return id;
+	}
+
+	public void setId(int id) {
+	    this.id = id;
+	}
 	
 	public Date getFechaTurno() {
 		return fechaTurno;
@@ -120,6 +127,11 @@ public class Turno {
 	public List<Turno> obtenerTurnosPorPaciente(Usuario paciente) {
 	    return ct.obtenerTurnosPorPaciente(paciente);
 	}
+	
+	public List<Turno> obtenerTurnosDisponibles() {
+	    return ct.obtenerTurnosDisponibles();
+	}
+
 	
 	public boolean modificarTurno(int idTurno, Date nuevaFecha, Time nuevaHora, String nuevoTipoSesion) {
 			LocalDateTime fechaHoraTurno = nuevaFecha.toLocalDate().atTime(nuevaHora.toLocalTime());

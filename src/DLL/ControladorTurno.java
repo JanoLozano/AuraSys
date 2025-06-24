@@ -8,10 +8,10 @@ import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.naming.spi.DirStateFactory.Result;
+
 import javax.swing.JOptionPane;
 
-import BLL.Paciente;
+
 import BLL.Turno;
 import BLL.Usuario;
 
@@ -26,6 +26,7 @@ public class ControladorTurno {
 	
 	ControladorUsuario controladorUsuario = new ControladorUsuario();
 	private static Connection con = Conexion.getInstance().getConnection();
+	
 	
 	public boolean crearTurno(int profesionalId, Date fechaTurno, Time horaTurno, String tipoSesion) {
 		 String sql = "INSERT INTO turno (fecha_turno, hora_turno, profesional_id, tipo_sesion, estado) "
@@ -159,6 +160,35 @@ public class ControladorTurno {
 	    return null;
 	}
 	
+	public List<Turno> obtenerTurnosDisponibles() {
+	    List<Turno> turnos = new ArrayList<>();
+	    String sql = "SELECT * FROM turno WHERE paciente_id IS NULL AND estado = 'activo'";
+
+	    try {
+	        PreparedStatement ps = con.prepareStatement(sql);
+	        ResultSet rs = ps.executeQuery();
+
+	        while (rs.next()) {
+	            Turno turno = new Turno();
+	            turno.setId(rs.getInt("id"));
+	            turno.setFechaTurno(rs.getDate("fecha_turno"));
+	            turno.setHoraTurno(rs.getTime("hora_turno"));
+	            turno.setTipoSesion(rs.getString("tipo_sesion"));
+	            turno.setEstado(rs.getString("estado"));
+
+	            int profesionalId = rs.getInt("profesional_id");
+	            Usuario profesional = controladorUsuario.obtenerUsuarioPorId(profesionalId);
+	            turno.setProfesional(profesional);
+
+	            turnos.add(turno);
+	        }
+	    } catch (Exception e) {
+	        JOptionPane.showMessageDialog(null, "ERROR al obtener turnos disponibles: " + e.getMessage());
+	    }
+
+	    return turnos;
+	}
+
 	public boolean modificarTurno(int idTurno, Date nuevaFecha, Time nuevaHora, String nuevoTipoSesion) {
 	    String sql = "UPDATE turno SET fecha_turno = ?, hora_turno = ?, tipo_sesion = ? WHERE id = ?";
 
