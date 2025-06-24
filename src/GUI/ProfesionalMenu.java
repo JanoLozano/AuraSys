@@ -26,10 +26,16 @@ public class ProfesionalMenu extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         // Icono Logout
-        JButton btnLogout = new JButton(new ImageIcon("src/IMG/logout.png"));
+        ImageIcon iconoOriginal = new ImageIcon("src/IMG/logout.png");
+        Image imagenEscalada = iconoOriginal.getImage().getScaledInstance(24, 24, Image.SCALE_SMOOTH);
+        ImageIcon iconoLogout = new ImageIcon(imagenEscalada);
+
+        JButton btnLogout = new JButton(iconoLogout);
         btnLogout.setBounds(10, 10, 32, 32);
         btnLogout.setToolTipText("Cerrar sesión");
-        btnLogout.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        btnLogout.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnLogout.setBorderPainted(true);
+        add(btnLogout);
         btnLogout.addActionListener(e -> {
             dispose();
             new Login().setVisible(true);
