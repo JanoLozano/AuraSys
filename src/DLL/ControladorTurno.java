@@ -64,8 +64,6 @@ public class ControladorTurno {
 			JOptionPane.showMessageDialog(null, "ERROR al cambiar estado del turno: " + e.getMessage());
 	        return false;
 		}
-		
-		
 	}
 	
 	public List<Turno> obtenerTurnosPorProfesional(Usuario profesional) {
@@ -81,6 +79,7 @@ public class ControladorTurno {
 			
 			while (rs.next()) {
 				Turno turno = new Turno();
+				turno.setId(rs.getInt("id"));
 				turno.setFechaTurno(rs.getDate("fecha_turno"));
 	            turno.setHoraTurno(rs.getTime("hora_turno"));
 	            turno.setTipoSesion(rs.getString("tipo_sesion"));

@@ -131,8 +131,12 @@ public class Turno {
 	public List<Turno> obtenerTurnosDisponibles() {
 	    return ct.obtenerTurnosDisponibles();
 	}
-
 	
+	
+	public boolean cambiarEstadoDeTurno(int idTurno, String nuevoEstado) {
+	    return ct.cambiarEstadoTurno(idTurno, nuevoEstado);
+	}
+
 	public boolean modificarTurno(int idTurno, Date nuevaFecha, Time nuevaHora, String nuevoTipoSesion) {
 			LocalDateTime fechaHoraTurno = nuevaFecha.toLocalDate().atTime(nuevaHora.toLocalTime());
 			LocalDateTime ahora = LocalDateTime.now(ZoneId.systemDefault());
